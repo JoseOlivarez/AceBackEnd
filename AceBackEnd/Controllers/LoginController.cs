@@ -13,6 +13,8 @@ namespace AceBackEnd.Controllers
     [ApiController]
     public class LoginController : ControllerBase
     {
+        private static ClientInformationDTO ClientInstance = null;
+
         // GET: api/<LoginController>
         [HttpGet]
         public IEnumerable<string> Get()
@@ -28,23 +30,90 @@ namespace AceBackEnd.Controllers
         }
 
 
-   
 
-        [HttpPost]
+        
+       [Route("Logins")]
+       [HttpPost]
        public async Task<IActionResult> LoginEndpoint([FromBody] LoginDTO dtoObject)
         {
             try
             {
-                LoginDTO returnObject =new  LoginDTO();
-                returnObject = dtoObject;
-
-            return Ok(returnObject);
+                if (ClientInstance != null && ClientInstance.Username.Length > 2 && ClientInstance.Password.Length > 2 && dtoObject.Username==ClientInstance.Username && dtoObject.Password==ClientInstance.Password)
+                {
+                    LoginDTO returnObject = dtoObject;
+                    return Ok(returnObject);
+                }
+                //if (dtoObject.Username.Length > 2 && dtoObject.Password.Length > 2) { 
+                //    returnObject = dtoObject;
+                //    return await Task.FromResult( Ok(returnObject));
+                //}
+                return BadRequest("Invalid Username or Password");
             }
             catch(Exception ex)
             {
-                return Ok(ex.Message);
+                return  StatusCode(500, ex);
             }
         }
+
+        [Route("Register")]
+        [HttpPost]
+        public async Task<IActionResult> RegisterEndpoint([FromBody] RegisterDTO dtoObject)
+        {
+            try
+            {
+                if (dtoObject.Username.Length > 2 && dtoObject.Password.Length > 2)
+                {
+                    ClientInstance = new ClientInformationDTO
+                    {
+                        Username = dtoObject.Username,
+                        Password = dtoObject.Password
+                    };
+                    return Ok(ClientInstance);
+                }
+                else
+                {
+                    Exception ex = new Exception();
+                    return BadRequest("Not sufficient Username or Password requirememnts");
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+
+        }
+
+
+        [Route("FinishRegistration")]
+        [HttpPost]
+        public async Task<IActionResult> FinishRegistration([FromBody] FinishProfileDTO dtoObject)
+        {
+            try
+            {
+                if (ClientInstance != null && dtoObject.Fullname.Length > 3 && dtoObject.Addressone.Length > 3 && dtoObject.City.Length > 3 && dtoObject.Zipcode.Length > 3)
+                {
+                    ClientInstance.Fullname = dtoObject.Fullname;
+                    ClientInstance.Addressone = dtoObject.Addressone;
+                    ClientInstance.Addresstwo = dtoObject.Addresstwo;
+                    ClientInstance.City = dtoObject.City;
+                    ClientInstance.State = dtoObject.State;
+                    ClientInstance.Zipcode = dtoObject.Zipcode;
+
+                    return await Task.FromResult(Ok(ClientInstance));
+                }
+                else
+                {
+                    Exception ex = new Exception();
+                    return BadRequest("Failed contact admin and give them an A");
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+
+        }
+
 
         // POST api/<LoginController>
         [HttpPost]
