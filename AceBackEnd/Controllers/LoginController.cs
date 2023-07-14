@@ -82,7 +82,21 @@ namespace AceBackEnd.Controllers
             }
 
         }
-
+        
+        [Route("GetClientInformation")]
+        [HttpGet]
+        public async Task <IActionResult> GetClientInformation()
+        {
+            try
+            {
+                return (Ok(ClientInstance));
+            }
+            catch(Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+          
+        }
 
         [Route("FinishRegistration")]
         [HttpPost]
