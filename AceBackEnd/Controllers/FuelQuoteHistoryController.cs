@@ -12,15 +12,15 @@ namespace AceBackEnd.Controllers
     public class FuelQuoteHistoryController : ControllerBase
     {
         [HttpGet]
-        public ActionResult<IEnumerable<FuelQuoteHistoryDto>> GetFuelQuoteHistory()
+        public ActionResult<IEnumerable<FuelQuoteHistoryDTO>> GetFuelQuoteHistory()
         {
             try
             {
-                var FuelQuoteHistoryDtos = new List<FuelQuoteHistoryDto>();
+                var FuelQuoteHistoryDTOs = new List<FuelQuoteHistoryDTO>();
 
                 for (int i = 1; i <= 15; i++)
                 {
-                    FuelQuoteHistoryDtos.Add(new FuelQuoteHistoryDto
+                    FuelQuoteHistoryDTOs.Add(new FuelQuoteHistoryDTO
                     {
                         Id = i,
                         GallonsRequested = 150 + i,
@@ -31,7 +31,7 @@ namespace AceBackEnd.Controllers
                     });
                 }
 
-                return Ok(FuelQuoteHistoryDtos);
+                return Ok(FuelQuoteHistoryDTOs);
             }
             catch (Exception)
             {
