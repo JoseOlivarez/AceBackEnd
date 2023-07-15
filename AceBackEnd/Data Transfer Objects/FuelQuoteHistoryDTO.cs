@@ -1,6 +1,6 @@
-namespace AceBackEnd.Controllers
+namespace AceBackEnd.Data_Transfer_Objects
 {
-    public class FuelQuoteHistoryDto
+    public class FuelQuoteHistoryDTO
     {
         public int Id { get; set; }
         public int GallonsRequested { get; set; }
