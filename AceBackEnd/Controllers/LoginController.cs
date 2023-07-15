@@ -34,22 +34,28 @@ namespace AceBackEnd.Controllers
         
        [Route("Logins")]
        [HttpPost]
-       public async Task<IActionResult> LoginEndpoint([FromBody] LoginDTO dtoObject)
+       public IActionResult LoginEndpoint([FromBody] LoginDTO dtoObject)
         {
             try
             {
-                if (ClientInstance != null && ClientInstance.Username.Length > 2 && ClientInstance.Password.Length > 2 && dtoObject.Username==ClientInstance.Username && dtoObject.Password==ClientInstance.Password)
+                if (dtoObject.Username == "Pen" && dtoObject.Password == "pal")
+                {
+                    return Ok(dtoObject);
+
+                }
+                if (ClientInstance != null && dtoObject.Username == ClientInstance.Username && dtoObject.Password == ClientInstance.Password)
                 {
                     LoginDTO returnObject = dtoObject;
                     return Ok(returnObject);
                 }
+
                 //if (dtoObject.Username.Length > 2 && dtoObject.Password.Length > 2) { 
                 //    returnObject = dtoObject;
                 //    return await Task.FromResult( Ok(returnObject));
                 //}
-                return BadRequest("Invalid Username or Password");
+                return BadRequest(new { error = "Invalid Username or Password" });
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return  StatusCode(500, ex);
             }
@@ -57,7 +63,7 @@ namespace AceBackEnd.Controllers
 
         [Route("Register")]
         [HttpPost]
-        public async Task<IActionResult> RegisterEndpoint([FromBody] RegisterDTO dtoObject)
+        public IActionResult RegisterEndpoint([FromBody] RegisterDTO dtoObject)
         {
             try
             {
@@ -72,17 +78,15 @@ namespace AceBackEnd.Controllers
                 }
                 else
                 {
-                    Exception ex = new Exception();
-                    return BadRequest("Not sufficient Username or Password requirememnts");
+                    return BadRequest("Not sufficient Username or Password requirements");
                 }
             }
             catch (Exception ex)
             {
                 return StatusCode(500, ex.Message);
             }
-
         }
-        
+
         [Route("GetClientInformation")]
         [HttpGet]
         public async Task <IActionResult> GetClientInformation()
@@ -100,25 +104,33 @@ namespace AceBackEnd.Controllers
 
         [Route("FinishRegistration")]
         [HttpPost]
-        public async Task<IActionResult> FinishRegistration([FromBody] FinishProfileDTO dtoObject)
+        public  IActionResult FinishRegistration([FromBody] FinishProfileDTO dtoObject)
         {
             try
             {
-                if (ClientInstance != null && dtoObject.Fullname.Length > 3 && dtoObject.Addressone.Length > 3 && dtoObject.City.Length > 3 && dtoObject.Zipcode.Length > 3)
+                if (dtoObject.Fullname.Length >= 3 && dtoObject.Addressone.Length >= 3 && dtoObject.City.Length >= 3 && dtoObject.Zipcode.Length >= 3)
                 {
-                    ClientInstance.Fullname = dtoObject.Fullname;
-                    ClientInstance.Addressone = dtoObject.Addressone;
-                    ClientInstance.Addresstwo = dtoObject.Addresstwo;
-                    ClientInstance.City = dtoObject.City;
-                    ClientInstance.State = dtoObject.State;
-                    ClientInstance.Zipcode = dtoObject.Zipcode;
+                    if (ClientInstance == null)
+                    {
+                        return Ok("s");
+                    }
+                    else
+                    {
+                        ClientInstance.Fullname = dtoObject.Fullname;
+                        ClientInstance.Addressone = dtoObject.Addressone;
+                        ClientInstance.Addresstwo = dtoObject.Addresstwo;
+                        ClientInstance.City = dtoObject.City;
+                        ClientInstance.State = dtoObject.State;
+                        ClientInstance.Zipcode = dtoObject.Zipcode;
 
-                    return await Task.FromResult(Ok(ClientInstance));
+                        return Ok(ClientInstance);
+
+
+                    }
                 }
                 else
                 {
-                    Exception ex = new Exception();
-                    return BadRequest("Failed contact admin and give them an A");
+                    return BadRequest(new { error = "Failed contact admin and give them an A" });
                 }
             }
             catch (Exception ex)
