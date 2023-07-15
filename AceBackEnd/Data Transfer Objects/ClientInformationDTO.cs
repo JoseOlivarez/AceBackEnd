@@ -1,4 +1,9 @@
-﻿namespace AceBackEnd.Data_Transfer_Objects
+﻿using static System.Net.Mime.MediaTypeNames;
+using static System.Runtime.InteropServices.JavaScript.JSType;
+using System.Reflection;
+using System.Text.RegularExpressions;
+
+namespace AceBackEnd.Data_Transfer_Objects
 {
     public class ClientInformationDTO
     {
@@ -11,6 +16,6 @@
         public string State { get; set; }
 
         public string Zipcode { get; set; }
-
+        
     }
 }
