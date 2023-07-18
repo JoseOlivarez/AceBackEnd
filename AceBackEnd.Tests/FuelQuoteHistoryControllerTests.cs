@@ -20,7 +20,7 @@ namespace AceBackEnd.Tests
 
             // Assert
             var okResult = Assert.IsType<OkObjectResult>(result.Result);
-            var returnValue = Assert.IsType<List<FuelQuoteHistoryDto>>(okResult.Value);
+            var returnValue = Assert.IsType<List<FuelQuoteHistoryDTO>>(okResult.Value);
             
             // Assert the count
             Assert.Equal(15, returnValue.Count);

@@ -13,55 +13,150 @@ namespace AceBackEnd.Controllers
     [ApiController]
     public class LoginController : ControllerBase
     {
-        // GET: api/<LoginController>
-        [HttpGet]
-        public IEnumerable<string> Get()
-        {
-            return new string[] { "value1", "value2" };
-        }
+        private static ClientInformationDTO ClientInstance = null;
 
-        // GET api/<LoginController>/5
-        [HttpGet("{id}")]
-        public string Get(int id)
-        {
-            return "value";
-        }
+        //// GET: api/<LoginController>
+        //[HttpGet]
+        //public IEnumerable<string> Get()
+        //{
+        //    return new string[] { "value1", "value2" };
+        //}
+
+        //// GET api/<LoginController>/5
+        //[HttpGet("{id}")]
+        //public string Get(int id)
+        //{
+        //    return "value";
+        //}
 
 
-   
 
-        [HttpPost]
-       public async Task<IActionResult> LoginEndpoint([FromBody] LoginDTO dtoObject)
+        
+       [Route("Logins")]
+       [HttpPost]
+       public IActionResult LoginEndpoint([FromBody] LoginDTO dtoObject)
         {
             try
             {
-                LoginDTO returnObject =new  LoginDTO();
-                returnObject = dtoObject;
+                if (dtoObject.Username == "Pen" && dtoObject.Password == "pal")
+                {
+                    return Ok(dtoObject);
 
-            return Ok(returnObject);
+                }
+                if (ClientInstance != null && dtoObject.Username == ClientInstance.Username && dtoObject.Password == ClientInstance.Password)
+                {
+                    LoginDTO returnObject = dtoObject;
+                    return Ok(returnObject);
+                }
+
+                //if (dtoObject.Username.Length > 2 && dtoObject.Password.Length > 2) { 
+                //    returnObject = dtoObject;
+                //    return await Task.FromResult( Ok(returnObject));
+                //}
+                return BadRequest(new { error = "Invalid Username or Password" });
+            }
+            catch (Exception ex)
+            {
+                return  StatusCode(500, ex);
+            }
+        }
+
+        [Route("Register")]
+        [HttpPost]
+        public IActionResult RegisterEndpoint([FromBody] RegisterDTO dtoObject)
+        {
+            try
+            {
+                if (dtoObject.Username.Length > 2 && dtoObject.Password.Length > 2)
+                {
+                    ClientInstance = new ClientInformationDTO
+                    {
+                        Username = dtoObject.Username,
+                        Password = dtoObject.Password
+                    };
+                    return Ok(ClientInstance);
+                }
+                else
+                {
+                    return BadRequest("Not sufficient Username or Password requirements");
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
+
+        [Route("GetClientInformation")]
+        [HttpGet]
+        public async Task <IActionResult> GetClientInformation()
+        {
+            try
+            {
+                return (Ok(ClientInstance));
             }
             catch(Exception ex)
             {
-                return Ok(ex.Message);
+                return StatusCode(500, ex.Message);
             }
+          
         }
 
-        // POST api/<LoginController>
+        [Route("FinishRegistration")]
         [HttpPost]
-        public void Post([FromBody] string value)
+        public  IActionResult FinishRegistration([FromBody] FinishProfileDTO dtoObject)
         {
+            try
+            {
+                if (dtoObject.Fullname.Length >= 3 && dtoObject.Addressone.Length >= 3 && dtoObject.City.Length >= 3 && dtoObject.Zipcode.Length >= 3)
+                {
+                    if (ClientInstance == null)
+                    {
+                        return Ok("s");
+                    }
+                    else
+                    {
+                        ClientInstance.Fullname = dtoObject.Fullname;
+                        ClientInstance.Addressone = dtoObject.Addressone;
+                        ClientInstance.Addresstwo = dtoObject.Addresstwo;
+                        ClientInstance.City = dtoObject.City;
+                        ClientInstance.State = dtoObject.State;
+                        ClientInstance.Zipcode = dtoObject.Zipcode;
+
+                        return Ok(ClientInstance);
+
+
+                    }
+                }
+                else
+                {
+                    return BadRequest(new { error = "Failed contact admin and give them an A" });
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+
         }
 
-        // PUT api/<LoginController>/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
-        {
-        }
 
-        // DELETE api/<LoginController>/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
-        }
+        //// POST api/<LoginController>
+        //[HttpPost]
+        //public void Post([FromBody] string value)
+        //{
+        //}
+
+        //// PUT api/<LoginController>/5
+        //[HttpPut("{id}")]
+        //public void Put(int id, [FromBody] string value)
+        //{
+        //}
+
+        //// DELETE api/<LoginController>/5
+        //[HttpDelete("{id}")]
+        //public void Delete(int id)
+        //{
+        //}
     }
 }
