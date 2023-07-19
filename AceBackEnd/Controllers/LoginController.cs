@@ -1,10 +1,15 @@
 ﻿using AceBackEnd.Data_Transfer_Objects;
+using AceBackEnd.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualBasic;
 using System.Runtime.InteropServices.ObjectiveC;
 using System.Runtime.Serialization;
-
+using System;
+using System.IO;
+using System.Security.Cryptography;
+using System.Text;
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace AceBackEnd.Controllers
@@ -14,6 +19,14 @@ namespace AceBackEnd.Controllers
     public class LoginController : ControllerBase
     {
         private static ClientInformationDTO ClientInstance = null;
+        private readonly AceDbContext _dbContext;
+        public LoginController(AceDbContext dbContext)
+        {
+            _dbContext = dbContext;
+        }
+
+
+
 
         //// GET: api/<LoginController>
         //[HttpGet]
@@ -30,18 +43,33 @@ namespace AceBackEnd.Controllers
         //}
 
 
+        private string ComputeSha256Hash(string rawData)
+        {
+            using (SHA256 sha256Hash = SHA256.Create())
+            {
+                byte[] bytes = sha256Hash.ComputeHash(Encoding.UTF8.GetBytes(rawData));
 
-        
+                StringBuilder builder = new StringBuilder();
+                foreach (byte b in bytes)
+                {
+                    builder.Append(b.ToString("x2"));
+                }
+                return builder.ToString();
+            }
+        }
+
        [Route("Logins")]
        [HttpPost]
        public IActionResult LoginEndpoint([FromBody] LoginDTO dtoObject)
         {
             try
             {
+                string encryptedPassword = ComputeSha256Hash(dtoObject.Password);
+                dtoObject.Password = encryptedPassword;
+
                 if (dtoObject.Username == "Pen" && dtoObject.Password == "pal")
                 {
                     return Ok(dtoObject);
-
                 }
                 if (ClientInstance != null && dtoObject.Username == ClientInstance.Username && dtoObject.Password == ClientInstance.Password)
                 {
@@ -69,6 +97,8 @@ namespace AceBackEnd.Controllers
             {
                 if (dtoObject.Username.Length > 2 && dtoObject.Password.Length > 2)
                 {
+                    string encryptedPassword = ComputeSha256Hash(dtoObject.Password);
+                    dtoObject.Password = encryptedPassword;
                     ClientInstance = new ClientInformationDTO
                     {
                         Username = dtoObject.Username,
@@ -93,6 +123,19 @@ namespace AceBackEnd.Controllers
         {
             try
             {
+                var getClients = await (from c in _dbContext.Clients
+                                        select new
+                                        {
+                                            c.ClientId,
+                                            c.Fullname,
+                                            c.Zipcode,
+                                            c.State,
+                                            c.City,
+                                            c.Addressone,
+                                           c.Addresstwo,
+                                           c.Username
+                                        }).ToListAsync();
+
                 return (Ok(ClientInstance));
             }
             catch(Exception ex)
