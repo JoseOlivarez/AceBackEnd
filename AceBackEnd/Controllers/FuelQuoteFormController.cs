@@ -39,7 +39,7 @@ namespace AceBackEnd.Controllers
            
         }
         [HttpPost]
-        public ActionResult<IEnumerable<FuelQuoteHistoryDto>> GetFuelQuotePrice([FromBody] FuelQuoteFormDTO dtoObject)
+        public ActionResult<IEnumerable<FuelQuoteHistoryDTO>> GetFuelQuotePrice([FromBody] FuelQuoteFormDTO dtoObject)
         {
             try
             {

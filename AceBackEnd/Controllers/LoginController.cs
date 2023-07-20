@@ -26,23 +26,6 @@ namespace AceBackEnd.Controllers
         }
 
 
-
-
-        //// GET: api/<LoginController>
-        //[HttpGet]
-        //public IEnumerable<string> Get()
-        //{
-        //    return new string[] { "value1", "value2" };
-        //}
-
-        //// GET api/<LoginController>/5
-        //[HttpGet("{id}")]
-        //public string Get(int id)
-        //{
-        //    return "value";
-        //}
-
-
         private string ComputeSha256Hash(string rawData)
         {
             using (SHA256 sha256Hash = SHA256.Create())
@@ -66,7 +49,7 @@ namespace AceBackEnd.Controllers
             {
                 string encryptedPassword = ComputeSha256Hash(dtoObject.Password);
                 dtoObject.Password = encryptedPassword;
-
+             
                 if (dtoObject.Username == "Pen" && dtoObject.Password == "pal")
                 {
                     return Ok(dtoObject);
@@ -165,7 +148,6 @@ namespace AceBackEnd.Controllers
                         ClientInstance.City = dtoObject.City;
                         ClientInstance.State = dtoObject.State;
                         ClientInstance.Zipcode = dtoObject.Zipcode;
-
                         return Ok(ClientInstance);
 
 

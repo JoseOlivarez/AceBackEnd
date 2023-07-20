@@ -16,4 +16,8 @@ public partial class FuelQuoteHistory
     public decimal? SuggestedPrice { get; set; }
 
     public decimal? TotalAmountDue { get; set; }
+
+    public int? ClientId { get; set; }
+
+    public virtual Client? Client { get; set; }
 }

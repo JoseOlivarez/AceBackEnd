@@ -22,4 +22,6 @@ public partial class Client
     public string? State { get; set; }
 
     public string? Zipcode { get; set; }
+
+    public virtual ICollection<FuelQuoteHistory> FuelQuoteHistories { get; set; } = new List<FuelQuoteHistory>();
 }

@@ -83,6 +83,10 @@ public partial class AceDbContext : DbContext
             entity.Property(e => e.PricePerGallon)
                 .HasColumnType("decimal(10, 2)")
                 .HasColumnName("pricePerGallon");
+
+            entity.HasOne(d => d.Client).WithMany()
+                .HasForeignKey(d => d.ClientId)
+                .HasConstraintName("FK__FuelQuote__Clien__6EF57B66");
         });
 
         modelBuilder.Entity<FuelQuoteHistory>(entity =>
@@ -98,6 +102,10 @@ public partial class AceDbContext : DbContext
             entity.Property(e => e.DeliveryDate).HasColumnType("datetime");
             entity.Property(e => e.SuggestedPrice).HasColumnType("decimal(10, 2)");
             entity.Property(e => e.TotalAmountDue).HasColumnType("decimal(10, 2)");
+
+            entity.HasOne(d => d.Client).WithMany(p => p.FuelQuoteHistories)
+                .HasForeignKey(d => d.ClientId)
+                .HasConstraintName("FK__FuelQuote__Clien__6E01572D");
         });
 
         modelBuilder.Entity<PricingModule>(entity =>

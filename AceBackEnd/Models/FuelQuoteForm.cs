@@ -16,4 +16,8 @@ public partial class FuelQuoteForm
     public decimal? FuelQuoteTotal { get; set; }
 
     public decimal? Amount { get; set; }
+
+    public int? ClientId { get; set; }
+
+    public virtual Client? Client { get; set; }
 }
