@@ -63,7 +63,7 @@ namespace AceBackEnd.Controllers
                     {
                     // Passwords match, return the user or any relevant data.
                     Client clientTemp = new Client();
-                    clientTemp.Username = user.Username;
+                    clientTemp.ClientId = user.ClientId;
                     clientTemp.Username = user.Username;
                     clientTemp.Password = user.Password;
                     
@@ -142,7 +142,7 @@ namespace AceBackEnd.Controllers
                                            c.Username
                                         }).ToListAsync();
 
-                return (Ok(ClientInstance));
+                return (Ok(getClients));
             }
             catch(Exception ex)
             {
@@ -153,28 +153,32 @@ namespace AceBackEnd.Controllers
 
         [Route("FinishRegistration")]
         [HttpPost]
-        public  IActionResult FinishRegistration([FromBody] FinishProfileDTO dtoObject)
+        public async Task<IActionResult> FinishRegistration([FromBody] FinishProfileDTO dtoObject)
         {
             try
             {
                 if (dtoObject.Fullname.Length >= 3 && dtoObject.Addressone.Length >= 3 && dtoObject.City.Length >= 3 && dtoObject.Zipcode.Length >= 3)
                 {
-                    if (ClientInstance == null)
-                    {
-                        return Ok("s");
-                    }
-                    else
-                    {
-                        ClientInstance.Fullname = dtoObject.Fullname;
-                        ClientInstance.Addressone = dtoObject.Addressone;
-                        ClientInstance.Addresstwo = dtoObject.Addresstwo;
-                        ClientInstance.City = dtoObject.City;
-                        ClientInstance.State = dtoObject.State;
-                        ClientInstance.Zipcode = dtoObject.Zipcode;
-                        return Ok(ClientInstance);
+                   
+                        var existingClient = await _dbContext.Clients.FirstOrDefaultAsync(c => c.ClientId == dtoObject.ClientId);
 
-
-                    }
+                        if (existingClient != null)
+                        {
+                            existingClient.Fullname = dtoObject.Fullname;
+                            existingClient.Addressone = dtoObject.Addressone; 
+                            existingClient.City = dtoObject.City;
+                            existingClient.Zipcode = dtoObject.Zipcode;
+                            existingClient.State = dtoObject.State;
+                            existingClient.Addresstwo = dtoObject.Addresstwo;
+                            existingClient.ClientId = dtoObject.ClientId;
+                            _ = _dbContext.SaveChangesAsync();
+                        
+                            return Ok();
+                        }
+                        else
+                        {
+                            return Ok("s");
+                        }
                 }
                 else
                 {
