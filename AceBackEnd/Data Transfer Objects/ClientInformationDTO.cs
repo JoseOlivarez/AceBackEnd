@@ -7,6 +7,7 @@ namespace AceBackEnd.Data_Transfer_Objects
 {
     public class ClientInformationDTO
     {
+        public int ClientId { get; set; }
         public string Username { get; set; }    
         public string Password { get; set; }
         public string Fullname { get; set; }

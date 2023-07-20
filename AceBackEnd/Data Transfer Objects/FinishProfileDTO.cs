@@ -2,6 +2,7 @@
 {
     public class FinishProfileDTO
     {
+        public int ClientId { get; set; }   
         public string Fullname { get; set; }
         public string Addressone { get; set; }
         public string Addresstwo { get; set; }

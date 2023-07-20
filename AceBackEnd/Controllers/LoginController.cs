@@ -18,7 +18,7 @@ namespace AceBackEnd.Controllers
     [ApiController]
     public class LoginController : ControllerBase
     {
-        private static ClientInformationDTO ClientInstance = null;
+        public  ClientInformationDTO  ClientInstance = null;
         private readonly AceDbContext _dbContext;
         public LoginController(AceDbContext dbContext)
         {
@@ -41,12 +41,13 @@ namespace AceBackEnd.Controllers
             }
         }
 
-       [Route("Logins")]
+        [Route("Logins")]
        [HttpPost]
        public IActionResult LoginEndpoint([FromBody] LoginDTO dtoObject)
         {
             try
             {
+               
                 string encryptedPassword = ComputeSha256Hash(dtoObject.Password);
                 dtoObject.Password = encryptedPassword;
              
@@ -54,10 +55,20 @@ namespace AceBackEnd.Controllers
                 {
                     return Ok(dtoObject);
                 }
-                if (ClientInstance != null && dtoObject.Username == ClientInstance.Username && dtoObject.Password == ClientInstance.Password)
-                {
-                    LoginDTO returnObject = dtoObject;
-                    return Ok(returnObject);
+
+                // TODO: Access your database context to check if the user exists.
+                    var user = _dbContext.Clients.FirstOrDefault(c => c.Username == dtoObject.Username);
+
+                    if (user != null && user.Password == encryptedPassword)
+                    {
+                    // Passwords match, return the user or any relevant data.
+                    Client clientTemp = new Client();
+                    clientTemp.Username = user.Username;
+                    clientTemp.Username = user.Username;
+                    clientTemp.Password = user.Password;
+                    
+                    return Ok(user);
+               
                 }
 
                 //if (dtoObject.Username.Length > 2 && dtoObject.Password.Length > 2) { 
@@ -80,14 +91,24 @@ namespace AceBackEnd.Controllers
             {
                 if (dtoObject.Username.Length > 2 && dtoObject.Password.Length > 2)
                 {
+                    // Retrieve the latest ClientId from the Clients table (assumes ClientId is an auto-incrementing primary key)
+                    int? latestClientId = _dbContext.Clients.OrderByDescending(c => c.ClientId).Select(c => c.ClientId).FirstOrDefault();
+
+                    // Increment the latestClientId by one to get the new ClientId for the new client
+                    int nextClientId = (latestClientId.HasValue ? latestClientId.Value : 0) + 1;
+
                     string encryptedPassword = ComputeSha256Hash(dtoObject.Password);
                     dtoObject.Password = encryptedPassword;
-                    ClientInstance = new ClientInformationDTO
+                    Client ClientInstanceNew = new Client
                     {
+                        ClientId = nextClientId,
                         Username = dtoObject.Username,
                         Password = dtoObject.Password
                     };
-                    return Ok(ClientInstance);
+                    _dbContext.Clients.Add(ClientInstanceNew);
+                    _dbContext.SaveChanges();
+
+                    return Ok(ClientInstanceNew);
                 }
                 else
                 {
@@ -101,13 +122,15 @@ namespace AceBackEnd.Controllers
         }
 
         [Route("GetClientInformation")]
-        [HttpGet]
-        public async Task <IActionResult> GetClientInformation()
+        [HttpPost]
+        public async Task <IActionResult> GetClientInformation([FromBody] ClientDTO objectDTO)
         {
             try
             {
-                var getClients = await (from c in _dbContext.Clients
-                                        select new
+                var getClients = await (
+                    from Client c in _dbContext.Clients
+                    where c.ClientId == objectDTO.ClientId
+                    select new
                                         {
                                             c.ClientId,
                                             c.Fullname,
