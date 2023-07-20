@@ -23,5 +23,9 @@ public partial class Client
 
     public string? Zipcode { get; set; }
 
+    public virtual ICollection<FuelQuoteForm> FuelQuoteForms { get; set; } = new List<FuelQuoteForm>();
+
     public virtual ICollection<FuelQuoteHistory> FuelQuoteHistories { get; set; } = new List<FuelQuoteHistory>();
+
+    public virtual ICollection<PricingModule> PricingModules { get; set; } = new List<PricingModule>();
 }

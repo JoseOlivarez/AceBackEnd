@@ -5,7 +5,7 @@ namespace AceBackEnd.Models;
 
 public partial class PricingModule
 {
-    public int ClientId { get; set; }
+    public int PricingModuleId { get; set; }
 
     public string? Location { get; set; }
 
@@ -26,4 +26,8 @@ public partial class PricingModule
     public decimal? SuggestedPricePerGallon { get; set; }
 
     public decimal? TotalAmountDue { get; set; }
+
+    public int? ClientId { get; set; }
+
+    public virtual Client? Client { get; set; }
 }

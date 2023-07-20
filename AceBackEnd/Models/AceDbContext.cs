@@ -62,10 +62,13 @@ public partial class AceDbContext : DbContext
 
         modelBuilder.Entity<FuelQuoteForm>(entity =>
         {
-            entity
-                .HasNoKey()
-                .ToTable("FuelQuoteForm");
+            entity.HasKey(e => e.Id).HasName("PK__FuelQuot__3213E83FE758EA38");
 
+            entity.ToTable("FuelQuoteForm");
+
+            entity.Property(e => e.Id)
+                .ValueGeneratedNever()
+                .HasColumnName("id");
             entity.Property(e => e.Amount)
                 .HasColumnType("decimal(10, 2)")
                 .HasColumnName("amount");
@@ -84,7 +87,7 @@ public partial class AceDbContext : DbContext
                 .HasColumnType("decimal(10, 2)")
                 .HasColumnName("pricePerGallon");
 
-            entity.HasOne(d => d.Client).WithMany()
+            entity.HasOne(d => d.Client).WithMany(p => p.FuelQuoteForms)
                 .HasForeignKey(d => d.ClientId)
                 .HasConstraintName("FK__FuelQuote__Clien__6EF57B66");
         });
@@ -110,11 +113,11 @@ public partial class AceDbContext : DbContext
 
         modelBuilder.Entity<PricingModule>(entity =>
         {
-            entity.HasKey(e => e.ClientId).HasName("PK__PricingM__E67E1A242D5B8C7C");
+            entity.HasKey(e => e.PricingModuleId).HasName("PK__PricingM__E67E1A242D5B8C7C");
 
             entity.ToTable("PricingModule");
 
-            entity.Property(e => e.ClientId).ValueGeneratedNever();
+            entity.Property(e => e.PricingModuleId).ValueGeneratedNever();
             entity.Property(e => e.CompanyProfitFactor).HasColumnType("decimal(10, 2)");
             entity.Property(e => e.CurrentPricePerGallon).HasColumnType("decimal(10, 2)");
             entity.Property(e => e.GallonsRequestedFactor).HasColumnType("decimal(10, 2)");
@@ -126,6 +129,10 @@ public partial class AceDbContext : DbContext
             entity.Property(e => e.RateHistoryFactor).HasColumnType("decimal(10, 2)");
             entity.Property(e => e.SuggestedPricePerGallon).HasColumnType("decimal(10, 2)");
             entity.Property(e => e.TotalAmountDue).HasColumnType("decimal(10, 2)");
+
+            entity.HasOne(d => d.Client).WithMany(p => p.PricingModules)
+                .HasForeignKey(d => d.ClientId)
+                .HasConstraintName("FK__PricingMo__Clien__6FE99F9F");
         });
 
         OnModelCreatingPartial(modelBuilder);

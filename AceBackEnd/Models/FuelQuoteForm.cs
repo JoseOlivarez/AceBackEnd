@@ -19,5 +19,7 @@ public partial class FuelQuoteForm
 
     public int? ClientId { get; set; }
 
+    public int Id { get; set; }
+
     public virtual Client? Client { get; set; }
 }
