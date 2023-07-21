@@ -1,8 +1,8 @@
 ﻿using AceBackEnd.Controllers;
 using AceBackEnd.Data_Transfer_Objects;
+using AceBackEnd.Models;
 using Microsoft.AspNetCore.Mvc;
 using Xunit;
-
 namespace AceBackEnd.Tests.Controllers
 {
     public class LoginControllerTests
@@ -11,11 +11,13 @@ namespace AceBackEnd.Tests.Controllers
         public void RegisterEndpoint_ValidCredentials_ReturnsOkResult()
         {
             // Arrange
-            var controller = new LoginController();
+            var mockDbContext = new AceDbContext();
+            var controller = new LoginController(mockDbContext);
+            var randomName = Guid.NewGuid().ToString("N");
             var dtoObject = new RegisterDTO
             {
-                Username = "validUsername",
-                Password = "validPassword"
+                Username = randomName,
+                Password = "123noe"
             };
 
             // Act
@@ -29,7 +31,8 @@ namespace AceBackEnd.Tests.Controllers
         public void RegisterEndpoint_InvalidCredentials_ReturnsBadRequestResult()
         {
             // Arrange
-            var controller = new LoginController();
+            var mockDbContext = new AceDbContext();
+            var controller = new LoginController(mockDbContext);
             var dtoObject = new RegisterDTO
             {
                 Username = "h",
@@ -45,12 +48,12 @@ namespace AceBackEnd.Tests.Controllers
         [Fact]
         public void LoginEndpoint_ValidCredentials_ReturnsOkResult()
         {
-            // Arrange
-            var controller = new LoginController();
+            var mockDbContext = new AceDbContext();
+            var controller = new LoginController(mockDbContext);
             var dtoObject = new LoginDTO
             {
-                Username = "Pen",
-                Password = "pal"
+                Username = "noel",
+                Password = "123noe"
             };
 
             // Act
@@ -64,8 +67,8 @@ namespace AceBackEnd.Tests.Controllers
         [Fact]
         public void LoginEndpoint_InvalidCredentials_ReturnsBadRequestResult()
         {
-            // Arrange
-            var controller = new LoginController();
+            var mockDbContext = new AceDbContext();
+            var controller = new LoginController(mockDbContext);
             var dtoObject = new LoginDTO
             {
                 Username = "asdfasdwe",
@@ -82,8 +85,9 @@ namespace AceBackEnd.Tests.Controllers
         [Fact]
         public void FinishRegisterEndpoint_ValidCredentials_ReturnsOkResult()
         {
-            // Arrange
-            var controller = new LoginController();
+            var mockDbContext = new AceDbContext();
+            var controller = new LoginController(mockDbContext);
+
             var dtoObject = new FinishProfileDTO
             {
                 Fullname = "string",
@@ -105,9 +109,10 @@ namespace AceBackEnd.Tests.Controllers
         [Fact]
         public void FinishRegisterEndpoint_InvalidCredentials_ReturnsBadRequestResult()
         {
-            
+
             // Arrange
-            var controller = new LoginController();
+            var mockDbContext = new AceDbContext();
+            var controller = new LoginController(mockDbContext);
             var dtoObject = new FinishProfileDTO
             {
                 Fullname = "s",
