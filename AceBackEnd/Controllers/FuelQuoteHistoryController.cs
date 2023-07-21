@@ -1,10 +1,20 @@
 using AceBackEnd.Data_Transfer_Objects;
-using Microsoft.AspNetCore.Identity;
+using AceBackEnd.Models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.VisualBasic;
-using System.Runtime.InteropServices.ObjectiveC;
-using System.Runtime.Serialization;
-using System.Text.Json.Nodes;
+using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+namespace AceBackEnd.Data_Transfer_Objects
+{
+    public class FuelQuoteRequestDTO
+    {
+        public int ClientId { get; set; }
+        public string Location { get; set; }
+        public int GallonsRequested { get; set; }
+    }
+}
 
 namespace AceBackEnd.Controllers
 {
@@ -12,33 +22,52 @@ namespace AceBackEnd.Controllers
     [ApiController]
     public class FuelQuoteHistoryController : ControllerBase
     {
-        [HttpGet]
-        public ActionResult<IEnumerable<FuelQuoteHistoryDTO>> GetFuelQuoteHistory()
+        private readonly AceDbContext _dbContext;
+        private readonly PricingService _pricingService;
+        public FuelQuoteHistoryController(AceDbContext dbContext,PricingService pricingService)
+        {
+            _dbContext = dbContext;
+            _pricingService = pricingService;
+        }
+
+        [HttpGet("{currentUserId}")]
+        public async Task<ActionResult<IEnumerable<FuelQuoteHistoryDTO>>> GetFuelQuoteHistory(int currentUserId)
         {
             try
             {
-                var FuelQuoteHistoryDTOs = new List<FuelQuoteHistoryDTO>();
-
-                for (int i = 1; i <= 15; i++)
-                {
-                    FuelQuoteHistoryDTOs.Add(new FuelQuoteHistoryDTO
-                    {
-                        Id = i,
-                        GallonsRequested = 150 + i,
-                        DeliveryAddress = $"123 Main St, Anywhere, USA {i}",
-                        DeliveryDate = new DateTime(2023, 7, 1).AddDays(i),
-                        SuggestedPrice = 2.50m,
-                        TotalAmountDue = (150 + i) * 2.50m
-                    });
-                }
-
-                return Ok(FuelQuoteHistoryDTOs);
+                var fuelQuoteHistoryDTOs = await (from fq in _dbContext.FuelQuoteHistories
+                                                  where fq.ClientId == currentUserId
+                                                  select new FuelQuoteHistoryDTO
+                                                  {
+                                                      Id = fq.Id,
+                                                      DeliveryAddress = fq.DeliveryAddress,
+                                                      DeliveryDate = fq.DeliveryDate,
+                                                      SuggestedPrice = fq.SuggestedPrice,
+                                                      TotalAmountDue = fq.TotalAmountDue,
+                                                      ClientId = fq.ClientId
+                                                  }).ToListAsync();
+                return Ok(fuelQuoteHistoryDTOs);
             }
-            catch (Exception)
+
+            catch (Exception ex)
             {
-                return StatusCode(500, "A problem happened while handling your request.");
+                return StatusCode(500, ex.Message);
             }
         }
-        
+
+        [HttpPost("CalculateFuelQuote")]
+        public async Task<ActionResult<double[]>> CalculateFuelQuote([FromBody] FuelQuoteRequestDTO request)
+        {
+            try
+            {
+                var prices = await _pricingService.CalculatePrice(request.ClientId, request.Location, request.GallonsRequested);
+                return Ok(prices);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
+
     }
 }
