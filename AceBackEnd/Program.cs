@@ -1,3 +1,6 @@
+using AceBackEnd.Models;
+using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -18,7 +21,12 @@ builder.Services.AddCors(options =>
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddDbContext<AceDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("Server=tcp:fuelquotesoftware.database.windows.net,1433;Initial Catalog=AceDB;Persist Security Info=True;User ID=AceSa;Password=Weareteam1!;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;")));
+
 var app = builder.Build();
+
+
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

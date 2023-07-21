@@ -1,10 +1,11 @@
 using AceBackEnd.Data_Transfer_Objects;
-using Microsoft.AspNetCore.Identity;
+using AceBackEnd.Models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.VisualBasic;
-using System.Runtime.InteropServices.ObjectiveC;
-using System.Runtime.Serialization;
-using System.Text.Json.Nodes;
+using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace AceBackEnd.Controllers
 {
@@ -12,33 +13,36 @@ namespace AceBackEnd.Controllers
     [ApiController]
     public class FuelQuoteHistoryController : ControllerBase
     {
+        private readonly AceDbContext _dbContext;
+
+        public FuelQuoteHistoryController(AceDbContext dbContext)
+        {
+            _dbContext = dbContext;
+        }
+
         [HttpGet]
-        public ActionResult<IEnumerable<FuelQuoteHistoryDTO>> GetFuelQuoteHistory()
+        public async Task<ActionResult<IEnumerable<FuelQuoteHistoryDTO>>> GetFuelQuoteHistory()
         {
             try
             {
-                var FuelQuoteHistoryDTOs = new List<FuelQuoteHistoryDTO>();
+                var fuelQuoteHistoryDTOs = await (from fq in _dbContext.FuelQuoteHistories
+                                                   select new FuelQuoteHistoryDTO
+                                                   {
+                                                       Id = fq.Id,
+                                                       GallonsRequested = fq.GallonsRequested,
+                                                       DeliveryAddress = fq.DeliveryAddress,
+                                                       DeliveryDate = fq.DeliveryDate,
+                                                       SuggestedPrice = fq.SuggestedPrice,
+                                                       TotalAmountDue = fq.TotalAmountDue
+                                                   }).ToListAsync();
 
-                for (int i = 1; i <= 15; i++)
-                {
-                    FuelQuoteHistoryDTOs.Add(new FuelQuoteHistoryDTO
-                    {
-                        Id = i,
-                        GallonsRequested = 150 + i,
-                        DeliveryAddress = $"123 Main St, Anywhere, USA {i}",
-                        DeliveryDate = new DateTime(2023, 7, 1).AddDays(i),
-                        SuggestedPrice = 2.50m,
-                        TotalAmountDue = (150 + i) * 2.50m
-                    });
-                }
-
-                return Ok(FuelQuoteHistoryDTOs);
+                return Ok(fuelQuoteHistoryDTOs);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return StatusCode(500, "A problem happened while handling your request.");
+                return StatusCode(500, ex.Message);
             }
         }
-        
+
     }
 }
