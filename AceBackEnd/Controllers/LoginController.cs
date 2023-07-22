@@ -50,11 +50,6 @@ namespace AceBackEnd.Controllers
                
                 string encryptedPassword = ComputeSha256Hash(dtoObject.Password);
                 dtoObject.Password = encryptedPassword;
-             
-                if (dtoObject.Username == "Pen" && dtoObject.Password == "pal")
-                {
-                    return Ok(dtoObject);
-                }
 
                 // TODO: Access your database context to check if the user exists.
                     var user = _dbContext.Clients.FirstOrDefault(c => c.Username == dtoObject.Username);
