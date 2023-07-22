@@ -1,4 +1,5 @@
 ﻿using AceBackEnd.Data_Transfer_Objects;
+using AceBackEnd.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.VisualBasic;
@@ -13,7 +14,11 @@ namespace AceBackEnd.Controllers
     [ApiController]
     public class FuelQuoteFormController : ControllerBase
     {
-
+        private readonly AceDbContext _dbContext;
+        public FuelQuoteFormController(AceDbContext dbContext)
+        {
+            _dbContext = dbContext;
+        }
         [HttpGet]
         public ActionResult<FuelQuoteFormDTO> FuelQuoteForm()
         {
@@ -43,7 +48,12 @@ namespace AceBackEnd.Controllers
         {
             try
             {
-                return Ok(new FuelQuoteFormDTO { pricePerGallon = dtoObject.pricePerGallon, amount = dtoObject.gallonsRequested*2.8, deliveryAddress = dtoObject.deliveryAddress.ToString(), deliveryDate = new DateOnly(dtoObject.deliveryDate.Year, dtoObject.deliveryDate.Month, dtoObject.deliveryDate.Day), gallonsRequested=dtoObject.gallonsRequested});
+                FuelQuoteForm myFuelQuote =  new FuelQuoteForm { PricePerGallon = (decimal)dtoObject.pricePerGallon, Amount = (decimal)(dtoObject.gallonsRequested * 2.8), DeliveryAddress = dtoObject.deliveryAddress.ToString(), DeliveryDate = new DateTime(dtoObject.deliveryDate.Year, dtoObject.deliveryDate.Month, dtoObject.deliveryDate.Day), GallonsRequested = dtoObject.gallonsRequested };
+
+                _dbContext.FuelQuoteForms.Add(myFuelQuote);
+                _dbContext.SaveChanges();
+
+                return Ok(myFuelQuote);
             }
             catch (Exception)
             {
