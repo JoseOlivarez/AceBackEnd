@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using AceBackEnd.Controllers;
 using AceBackEnd.Data_Transfer_Objects;
+using AceBackEnd.Models;
 using Microsoft.AspNetCore.Mvc;
 using Xunit;
 /// <summary>
@@ -16,7 +17,9 @@ namespace AceBackEnd.Tests
             [Fact]
             public void GetFuelQuoteForm_ReturnsCorrectData()
             {
-                var controller = new FuelQuoteFormController();
+            var mockDbContext = new AceDbContext();
+
+            var controller = new FuelQuoteFormController(mockDbContext);
                 var result = controller.FuelQuoteForm();
                 var okResult = Assert.IsType<OkObjectResult>(result.Result);
                 var returnValue = Assert.IsType<FuelQuoteFormDTO>(okResult.Value);

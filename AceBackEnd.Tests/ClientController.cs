@@ -83,24 +83,26 @@ namespace AceBackEnd.Tests.Controllers
         }
 
         [Fact]
-        public void FinishRegisterEndpoint_ValidCredentials_ReturnsOkResult()
+        public async void FinishRegisterEndpoint_ValidCredentials_ReturnsOkResult()
         {
             var mockDbContext = new AceDbContext();
             var controller = new LoginController(mockDbContext);
 
             var dtoObject = new FinishProfileDTO
             {
+                ClientId = 3,
+
                 Fullname = "string",
                 Addressone = "string",
                 Addresstwo = "string",
-                City = "New york",
-                State="string",
-                Zipcode ="string"
+                City = "string",
+                State = "string",
+                Zipcode = "string"
             };
 
             // Act
-            var result = controller.FinishRegistration(dtoObject);
-
+            var result = await controller.FinishRegistration(dtoObject);
+           
             // Assert
             Assert.IsType<OkObjectResult>(result);
         }
@@ -114,20 +116,21 @@ namespace AceBackEnd.Tests.Controllers
             var mockDbContext = new AceDbContext();
             var controller = new LoginController(mockDbContext);
             var dtoObject = new FinishProfileDTO
-            {
-                Fullname = "s",
-                Addressone = "l",
+           {
+                ClientId= 1, 
+               Fullname = "s",
+               Addressone = "l",
                 Addresstwo = "m",
-                City = "k",
-                State = "NY",
-                Zipcode = "2"
+             City = "k",
+             State = "NY",
+               Zipcode = "2"
             };
 
-            // Act
+        //    // Act
             var result = controller.FinishRegistration(dtoObject);
 
             // Assert
-            Assert.IsType<BadRequestObjectResult>(result);
+           Assert.IsType<BadRequestObjectResult>(result);
         }
 
 
