@@ -40,6 +40,7 @@ namespace AceBackEnd.Controllers
                                                   select new FuelQuoteHistoryDTO
                                                   {
                                                       Id = fq.Id,
+                                                      GallonsRequested = fq.GallonsRequested,
                                                       DeliveryAddress = fq.DeliveryAddress,
                                                       DeliveryDate = fq.DeliveryDate,
                                                       SuggestedPrice = fq.SuggestedPrice,
@@ -55,13 +56,25 @@ namespace AceBackEnd.Controllers
             }
         }
 
-        [HttpPost("CalculateFuelQuote")]
-        public async Task<ActionResult<double[]>> CalculateFuelQuote([FromBody] FuelQuoteRequestDTO request)
+        [HttpGet("CalculateFuelQuote")]
+        public async Task<ActionResult> CalculateFuelQuote([FromQuery] FuelQuoteRequestDTO request)
         {
+            if(request.ClientId == null || request.Location == null || request.GallonsRequested <= 0)
+            {
+                return BadRequest("Invalid input parameters.");
+            }
+
             try
             {
                 var prices = await _pricingService.CalculatePrice(request.ClientId, request.Location, request.GallonsRequested);
-                return Ok(prices);
+
+                var result = new 
+                {
+                    totalAmount = prices[0],
+                    suggestedPrice = prices[1]
+                };
+
+                return Ok(result);
             }
             catch (Exception ex)
             {
