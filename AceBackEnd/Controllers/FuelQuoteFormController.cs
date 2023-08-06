@@ -43,12 +43,32 @@ namespace AceBackEnd.Controllers
 
            
         }
-        [HttpPost]
-        public ActionResult<IEnumerable<FuelQuoteHistoryDTO>> GetFuelQuotePrice([FromBody] FuelQuoteFormDTO dtoObject)
+        [HttpPost("Purchase")]
+        public IActionResult GetFuelQuotePrice([FromBody] FuelQuoteFormPurchaseDTO dtoObject)
         {
             try
             {
-                FuelQuoteForm myFuelQuote =  new FuelQuoteForm { PricePerGallon = (decimal)dtoObject.pricePerGallon, Amount = (decimal)(dtoObject.gallonsRequested * 2.8), DeliveryAddress = dtoObject.deliveryAddress.ToString(), DeliveryDate = new DateTime(dtoObject.deliveryDate.Year, dtoObject.deliveryDate.Month, dtoObject.deliveryDate.Day), GallonsRequested = dtoObject.gallonsRequested };
+                // Retrieve the latest PurchaseId from the FuelQuoteForm table (assumes Id is an auto-incrementing primary key)
+                int? latestPurchaseId = _dbContext.FuelQuoteForms.OrderByDescending(p => p.Id).Select(p => p.Id).FirstOrDefault();
+
+                // Increment the latestPurchaseId by one to get the new PurchaseId for the new purchase
+                int nextPurchaseId = (latestPurchaseId.HasValue ? latestPurchaseId.Value : 0) + 1;
+                
+                decimal amount = (decimal) (dtoObject.amount);
+                decimal pricePerGallon = (decimal) (dtoObject.pricePerGallon);
+                FuelQuoteForm myFuelQuote = new FuelQuoteForm { 
+                    PricePerGallon = amount, 
+                    Amount = pricePerGallon, 
+                    DeliveryAddress = dtoObject.deliveryAddress.ToString(), 
+                    DeliveryDate = new DateTime(dtoObject.dateYear, dtoObject.dateMonth, dtoObject.dateDay), 
+                    GallonsRequested = dtoObject.gallonsRequested,
+                    FuelQuoteTotal = pricePerGallon,
+                    ClientId = dtoObject.clientId,
+                    Id = nextPurchaseId
+                };
+
+                // return BadRequest(myFuelQuote);
+
 
                 _dbContext.FuelQuoteForms.Add(myFuelQuote);
                 _dbContext.SaveChanges();
