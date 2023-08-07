@@ -98,13 +98,22 @@ public partial class AceDbContext : DbContext
 
             entity.ToTable("FuelQuoteHistory");
 
-            entity.Property(e => e.Id).ValueGeneratedNever();
+            entity.Property(e => e.Id)
+                .ValueGeneratedNever()
+                .HasColumnName("id");;
             entity.Property(e => e.DeliveryAddress)
                 .HasMaxLength(255)
-                .IsUnicode(false);
-            entity.Property(e => e.DeliveryDate).HasColumnType("datetime");
-            entity.Property(e => e.SuggestedPrice).HasColumnType("decimal(10, 2)");
-            entity.Property(e => e.TotalAmountDue).HasColumnType("decimal(10, 2)");
+                .IsUnicode(false)
+                .HasColumnName("deliveryAddress");
+            entity.Property(e => e.DeliveryDate)
+                .HasColumnType("datetime")
+                .HasColumnName("deliveryDate");
+            entity.Property(e => e.SuggestedPrice)
+                .HasColumnType("decimal(10, 2)")
+                .HasColumnName("suggestedPrice");
+            entity.Property(e => e.TotalAmountDue)
+                .HasColumnType("decimal(10, 2)")
+                .HasColumnName("totalAmountDue");
 
             entity.HasOne(d => d.Client).WithMany(p => p.FuelQuoteHistories)
                 .HasForeignKey(d => d.ClientId)

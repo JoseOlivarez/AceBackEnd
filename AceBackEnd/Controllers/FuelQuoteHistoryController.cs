@@ -82,5 +82,43 @@ namespace AceBackEnd.Controllers
             }
         }
 
+        [HttpPost("NewHistory")]
+        public IActionResult NewHistory([FromBody] FuelQuoteFormPurchaseDTO dtoObject) {
+
+            
+            try {
+
+                decimal amount = (decimal) (dtoObject.amount);
+                decimal pricePerGallon = (decimal) (dtoObject.pricePerGallon);
+
+                // Retrieve the latest PurchaseId from the FuelQuoteForm table (assumes Id is an auto-incrementing primary key)
+                int? latestHistoryId = _dbContext.FuelQuoteHistories.OrderByDescending(h => h.Id).Select(h => h.Id).FirstOrDefault();
+
+                // Increment the latestPurchaseId by one to get the new PurchaseId for the new purchase
+                int nextHistoryId = (latestHistoryId.HasValue ? latestHistoryId.Value : 0) + 1;
+                
+                FuelQuoteHistory myFuelQuoteHistory = new FuelQuoteHistory {
+                    Id = nextHistoryId,
+                    GallonsRequested = dtoObject.gallonsRequested,
+                    DeliveryAddress = dtoObject.deliveryAddress.ToString(),
+                    DeliveryDate = new DateTime(dtoObject.dateYear, dtoObject.dateMonth, dtoObject.dateDay),
+                    SuggestedPrice = pricePerGallon,
+                    TotalAmountDue = amount,
+                    ClientId = dtoObject.clientId
+                };
+
+                
+                _dbContext.FuelQuoteHistories.Add(myFuelQuoteHistory);
+                _dbContext.SaveChanges();
+
+                return Ok(myFuelQuoteHistory);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "A problem happened while handling your request.");
+            }
+            
+        }
+
     }
 }

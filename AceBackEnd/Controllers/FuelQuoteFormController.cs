@@ -57,8 +57,8 @@ namespace AceBackEnd.Controllers
                 decimal amount = (decimal) (dtoObject.amount);
                 decimal pricePerGallon = (decimal) (dtoObject.pricePerGallon);
                 FuelQuoteForm myFuelQuote = new FuelQuoteForm { 
-                    PricePerGallon = amount, 
-                    Amount = pricePerGallon, 
+                    PricePerGallon = pricePerGallon, 
+                    Amount = amount, 
                     DeliveryAddress = dtoObject.deliveryAddress.ToString(), 
                     DeliveryDate = new DateTime(dtoObject.dateYear, dtoObject.dateMonth, dtoObject.dateDay), 
                     GallonsRequested = dtoObject.gallonsRequested,
@@ -67,11 +67,10 @@ namespace AceBackEnd.Controllers
                     Id = nextPurchaseId
                 };
 
-                // return BadRequest(myFuelQuote);
-
-
+                
                 _dbContext.FuelQuoteForms.Add(myFuelQuote);
                 _dbContext.SaveChanges();
+
 
                 return Ok(myFuelQuote);
             }
