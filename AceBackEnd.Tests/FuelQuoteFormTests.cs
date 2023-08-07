@@ -28,6 +28,32 @@ namespace AceBackEnd.Tests
 
 
             }
+
+            [Fact]
+            public void SubmitPurchaseFuelQuote_ReturnsCorrectData()
+            {
+                var mockDbContext = new AceDbContext();
+
+                var controller = new FuelQuoteFormController(mockDbContext);
+
+                var dtoObject = new FuelQuoteFormPurchaseDTO
+                {
+                    gallonsRequested = 8000,
+                    dateYear = 2023,
+                    dateMonth = 8,
+                    dateDay = 6,
+                    pricePerGallon = 1.71,
+                    deliveryAddress = "123 aoeu st",
+                    fuelQuoteTotal = 13680,
+                    amount = 13680,
+                    clientId = 54
+                };
+
+                var result = controller.GetFuelQuotePrice(dtoObject);
+
+                // Assert
+                Assert.IsType<OkObjectResult>(result);
+            }
         
     }
 }
