@@ -35,7 +35,7 @@ namespace AceBackEnd.Controllers
         {
             try
             {
-                var fuelQuoteHistoryDTOs = await (from fq in _dbContext.FuelQuoteHistories
+                var fuelQuoteHistoryDTOs = await (from fq in _dbContext.FuelQuoteForms
                                                   where fq.ClientId == currentUserId
                                                   select new FuelQuoteHistoryDTO
                                                   {
@@ -43,8 +43,8 @@ namespace AceBackEnd.Controllers
                                                       GallonsRequested = fq.GallonsRequested,
                                                       DeliveryAddress = fq.DeliveryAddress,
                                                       DeliveryDate = fq.DeliveryDate,
-                                                      SuggestedPrice = fq.SuggestedPrice,
-                                                      TotalAmountDue = fq.TotalAmountDue,
+                                                      SuggestedPrice = fq.PricePerGallon,
+                                                      TotalAmountDue = fq.Amount,
                                                       ClientId = fq.ClientId
                                                   }).ToListAsync();
                 return Ok(fuelQuoteHistoryDTOs);
