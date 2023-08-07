@@ -10,6 +10,38 @@ namespace AceBackEnd.Tests
 {
     public class FuelQuoteHistoryControllerTests
     {
+        [Fact]
+        public void GetFuelQuoteHistory_Test()
+        {
+            var mockDbContext = new AceDbContext();
+
+            var pricingService = new PricingService(mockDbContext);
+
+            var controller = new FuelQuoteHistoryController(mockDbContext, pricingService);
+
+            var userId = 54;
+
+            var result = controller.GetFuelQuoteHistory(userId);
+        }
+
+        [Fact]
+        public void CalculateFuelQuote_Test()
+        {
+            var mockDbContext = new AceDbContext();
+
+            var pricingService = new PricingService(mockDbContext);
+
+            var controller = new FuelQuoteHistoryController(mockDbContext, pricingService);
+
+            var dtoObject = new FuelQuoteRequestDTO
+            {
+                ClientId = 54,
+                Location = "Texas",
+                GallonsRequested = 1
+            };
+
+            var result = controller.CalculateFuelQuote(dtoObject);
+        }
         //[Fact]
         //public void GetFuelQuoteHistory_ReturnsCorrectData()
         //{
